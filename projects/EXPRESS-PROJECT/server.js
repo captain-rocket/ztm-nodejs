@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   console.log(
     log.color.lime(`${req.method} ${req.baseUrl}${req.url}`),
     `\n${log.color.br_blue('Time to complete Request:')}`,
-    log.color.cyan(`${delta}`),
+    log.color.cyan(`${delta}ms`),
   );
 });
 
