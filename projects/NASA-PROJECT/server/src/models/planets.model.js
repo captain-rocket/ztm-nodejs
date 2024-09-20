@@ -3,9 +3,9 @@ const path = require('path');
 const { parse } = require('csv-parse');
 const keplerData = `${path.join(__dirname, '../../data/kepler_data.csv')}`;
 
-const log = require('../routes/color.logs.controller');
+const planets = require('./planets.mongo');
 
-const habitablePlanet = [];
+const log = require('../routes/color.logs.controller');
 
 function isHabitablePlanet(planet) {
   return planet['koi_disposition'] === 'CONFIRMED' && planet['koi_insol'] > 0.36 && planet['koi_insol'] < 1.11 && planet['koi_prad'] < 1.6;
@@ -20,24 +20,49 @@ function loadPlanetsData() {
           columns: true,
         }),
       )
-      .on('data', (data) => {
+      .on('data', async (data) => {
         if (isHabitablePlanet(data)) {
-          habitablePlanet.push(data);
+          /*
+           * loadPlanetsData() will be called when starting the server and in parallel if in a cluster. This so every time it is restarted would created the data again and if in cluster for each cluster.
+           * mongoose provides a solution to this with upsert
+           * meaning insert + update = upsert
+           */
+          savePlanet(data);
+          // habitablePlanet.push(data);
         }
       })
       .on('error', (err) => {
         console.log(err);
         reject(err);
       })
-      .on('end', () => {
-        console.log(`${log.bg.lime('habitable planets found!')} ${log.color.lime(`${habitablePlanet.length}`)}`);
+      .on('end', async () => {
+        const countPlanetsFound = (await getAllplanets()).length;
+        console.log(`${log.bg.lime('habitable planets found!')} ${log.color.lime(`${countPlanetsFound}`)}`);
         resolve();
       });
   });
 }
 
-function getAllplanets() {
-  return habitablePlanet;
+async function getAllplanets() {
+  return await planets.find({}).select('keplerName -_id');
+}
+
+async function savePlanet(planet) {
+  try {
+    await planets.updateOne(
+      {
+        keplerName: planet.kepler_name,
+      },
+      {
+        keplerName: planet.kepler_name,
+      },
+      {
+        upsert: true,
+      },
+    );
+  } catch (err) {
+    console.error(`Could not save planet ${err}`);
+  }
 }
 module.exports = {
   loadPlanetsData,

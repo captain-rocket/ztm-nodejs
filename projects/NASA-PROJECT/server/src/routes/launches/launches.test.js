@@ -1,54 +1,67 @@
 const request = require('supertest');
 const app = require('../../app');
+const { mongoConnect, mongoDisconnect } = require('../../services/mongo');
 
-const completeLaunchData = {
-  mission: 'Mission Test',
-  rocket: 'Rocket Test',
-  launchDate: 'July 14, 1982',
-  target: 'Target Test',
-};
-const launchDataInvalidDate = {
-  mission: 'Mission Test',
-  rocket: 'Rocket Test',
-  launchDate: 'zoot',
-  target: 'Target Test',
-};
+const launchRoute = '/v1/launches';
 
-const launchDataNoDate = {
-  mission: 'Mission Test',
-  rocket: 'Rocket Test',
-  target: 'Target Test',
-};
-
-describe('Test GET /launches', () => {
-  test('It should respond with Content-Type json and 200 success', async () => {
-    await request(app).get('/launches').expect('Content-Type', /json/).expect(200);
+describe('Launches API', () => {
+  beforeAll(async () => {
+    await mongoConnect();
   });
-});
-
-describe('Test POST /launches', () => {
-  test('It should respond with 201 created', async () => {
-    const resp = await request(app).post('/launches').send(completeLaunchData).expect('Content-Type', /json/).expect(201);
-
-    const reqDate = new Date(completeLaunchData.launchDate).valueOf();
-    const resDate = new Date(resp.body.launchDate).valueOf();
-
-    expect(resDate).toBe(reqDate);
-
-    expect(resp.body).toMatchObject(launchDataNoDate);
+  afterAll(async () => {
+    console.log('Disconnecting from MongoDB and closing server...');
+    await mongoDisconnect(); // Await MongoDB disconnection
+    console.log('MongoDB disconnected.');
   });
-  test('It should catch missing required propeties', async () => {
-    const resp = await request(app).post('/launches').send(launchDataNoDate).expect('Content-Type', /json/).expect(400);
-
-    expect(resp.body).toStrictEqual({
-      error: 'Missing required launch property',
+  describe(`Test GET ${launchRoute}`, () => {
+    test('It should respond with Content-Type json and 200 success', async () => {
+      await request(app).get(launchRoute).expect('Content-Type', /json/).expect(200);
     });
   });
-  test('It should catch missing invalid dates', async () => {
-    const resp = await request(app).post('/launches').send(launchDataInvalidDate).expect('Content-Type', /json/).expect(400);
 
-    expect(resp.body).toStrictEqual({
-      error: 'Invalid launch date',
+  describe('Test POST /launches', () => {
+    const completeLaunchData = {
+      mission: 'Mission Test',
+      rocket: 'Rocket Test',
+      launchDate: 'July 14, 1982',
+      target: 'Kepler-452 b',
+    };
+    const launchDataInvalidDate = {
+      mission: 'Mission Test',
+      rocket: 'Rocket Test',
+      launchDate: 'zoot',
+      target: 'Kepler-452 b',
+    };
+
+    const launchDataNoDate = {
+      mission: 'Mission Test',
+      rocket: 'Rocket Test',
+      target: 'Kepler-452 b',
+    };
+
+    test('It should respond with 201 created', async () => {
+      const resp = await request(app).post(launchRoute).send(completeLaunchData).expect('Content-Type', /json/).expect(201);
+
+      const reqDate = new Date(completeLaunchData.launchDate).valueOf();
+      const resDate = new Date(resp.body.launchDate).valueOf();
+
+      expect(resDate).toBe(reqDate);
+
+      expect(resp.body).toMatchObject(launchDataNoDate);
+    });
+    test('It should catch missing required properties', async () => {
+      const resp = await request(app).post(launchRoute).send(launchDataNoDate).expect('Content-Type', /json/).expect(400);
+
+      expect(resp.body).toStrictEqual({
+        error: 'Missing required launch property',
+      });
+    });
+    test('It should catch missing invalid dates', async () => {
+      const resp = await request(app).post(launchRoute).send(launchDataInvalidDate).expect('Content-Type', /json/).expect(400);
+
+      expect(resp.body).toStrictEqual({
+        error: 'Invalid launch date',
+      });
     });
   });
 });
