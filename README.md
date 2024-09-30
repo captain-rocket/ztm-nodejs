@@ -7,7 +7,7 @@ This repo contains the code from Complete Node.js Developer in 2024: Zero to Mas
 **Note:**
 NASA-PROJECT was moved to it's own repo for tracking simplicity.
 
-From this point forward if upon completion of a course section and there are no code changes because the only code changes were in a repo outside of the course repo I reference in this readme.
+From this point forward if upon completion of a course section. No code changes were made to this repo. I will reference to the code changes in this readme.
 
 ### Continuous Integration and Delivery
 
