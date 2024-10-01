@@ -13,5 +13,11 @@ From this point forward if upon completion of a course section. No code changes 
 
 Code changes can be found [NASA-PROJECT](https://github.com/captain-rocket/nasa-project)
 commits:
-[Sections first commit](https://github.com/captain-rocket/nasa-project/commit/532877585e36077eddad689d8e9569f8c4df5d77)
-[Sections last commit](https://github.com/captain-rocket/nasa-project/commit/095cd51f5b3aba0494c174e7bc8a077bfb210bed)
+[Section first commit](https://github.com/captain-rocket/nasa-project/commit/532877585e36077eddad689d8e9569f8c4df5d77)
+[Section last commit](https://github.com/captain-rocket/nasa-project/commit/095cd51f5b3aba0494c174e7bc8a077bfb210bed)
+
+### Node Production and the Cloud (Docker + AWS)
+
+Code changes can be found [NASA-PROJECT](https://github.com/captain-rocket/nasa-project)
+commits:
+[Section commit](https://github.com/captain-rocket/nasa-project/commit/5cff52ec45d3dc178737b18ab52b74bdd465c9a5)
