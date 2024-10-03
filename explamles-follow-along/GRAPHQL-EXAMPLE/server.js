@@ -1,4 +1,3 @@
-const path = require('path');
 const express = require('express');
 const { createYoga } = require('graphql-yoga');
 const { loadFilesSync } = require('@graphql-tools/load-files');
@@ -7,18 +6,16 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const app = express();
 const port = 3000;
 
-const typesArray = loadFilesSync(path.join(__dirname, '**/*.graphql'));
-
-const resolvers = {
-  Query: {
-    products: () => require('./products/products.model').products,
-    orders: () => require('./orders/orders.model').orders,
-  },
-};
+const typesArray = loadFilesSync('**/*', {
+  extensions: ['graphql'],
+});
+const resolversArray = loadFilesSync('**/*', {
+  extensions: ['resolvers.js'],
+});
 
 const schema = makeExecutableSchema({
   typeDefs: typesArray,
-  resolvers,
+  resolvers: resolversArray,
 });
 
 app.use(
