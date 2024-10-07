@@ -1,4 +1,6 @@
+const e = require('express');
 const productsModel = require('./products.model');
+const { GraphQLError } = require('graphql');
 
 module.exports = {
   Query: {
@@ -11,6 +13,24 @@ module.exports = {
     },
     product: (_, args) => {
       return productsModel.getProductById(args.id);
+    },
+  },
+  Mutation: {
+    addNewProduct: (_, args) => {
+      return productsModel.addNewProduct(args.id, args.description, args.price);
+    },
+    addNewProductReview: async (_, args) => {
+      try {
+        return await productsModel.postReview(args.id, args.rating, args.comment);
+      } catch (error) {
+        throw new GraphQLError(error.userMessage, {
+          extensions: {
+            message: error.message,
+            code: error.reason || 'UNKNOWN_ERROR',
+            productID: error.productID,
+          },
+        });
+      }
     },
   },
 };

@@ -25,6 +25,5 @@ app.use(
     graphiql: true,
   }),
 );
-
 app.get('/', (req, res) => res.send('GraphQL is Great‼️‼️'));
 app.listen(port, () => console.log(`Running GraphQL server listening on port ${port}!`));
