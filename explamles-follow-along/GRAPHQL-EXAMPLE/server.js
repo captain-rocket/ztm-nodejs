@@ -1,5 +1,8 @@
+const cors = require('cors');
 const express = require('express');
-const { createYoga } = require('graphql-yoga');
+
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
 const { loadFilesSync } = require('@graphql-tools/load-files');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 
@@ -13,17 +16,26 @@ const resolversArray = loadFilesSync('**/*', {
   extensions: ['resolvers.js'],
 });
 
-const schema = makeExecutableSchema({
-  typeDefs: typesArray,
-  resolvers: resolversArray,
-});
+async function startApolloServer() {
+  const app = express();
 
-app.use(
-  '/graphql',
-  createYoga({
+  const schema = makeExecutableSchema({
+    typeDefs: typesArray,
+    resolvers: resolversArray,
+  });
+
+  const server = new ApolloServer({
     schema,
-    graphiql: true,
-  }),
-);
-app.get('/', (req, res) => res.send('GraphQL is Great‼️‼️'));
-app.listen(port, () => console.log(`Running GraphQL server listening on port ${port}!`));
+  });
+
+  await server.start();
+
+  app.use(cors());
+  app.use(express.json());
+
+  app.use('/graphql', expressMiddleware(server));
+
+  app.get('/', (req, res) => res.send('GraphQL is Great‼️‼️'));
+  app.listen(port, () => console.log(`Running GraphQL server listening on port ${port}!`));
+}
+startApolloServer();

@@ -1,5 +1,3 @@
-const { filter } = require('graphql-yoga');
-
 const products = [
   {
     id: 'redshoes',

@@ -1,4 +1,3 @@
-const e = require('express');
 const productsModel = require('./products.model');
 const { GraphQLError } = require('graphql');
 
