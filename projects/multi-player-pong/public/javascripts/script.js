@@ -16,7 +16,6 @@ let paddleWidth = 50;
 let paddleDiff = 25;
 let paddleX = [225, 225];
 let trajectoryX = [0, 0];
-let playerMoved = false;
 
 //* Ball
 let ballX = 250;
@@ -27,7 +26,6 @@ let ballDirection = 1;
 //* Speed
 let speedY = 2;
 let speedX = 0;
-// let computerSpeed = 4;
 
 //* Score for Both Players
 let score = [0, 0];
@@ -148,9 +146,8 @@ function ballMove() {
   //* Vertical Speed
   ballY += speedY * ballDirection;
   //* Horizontal Speed
-  if (playerMoved) {
-    ballX += speedX;
-  }
+  ballX += speedX;
+
   socket.emit('ballMove', {
     ballX,
     ballY,
@@ -234,9 +231,14 @@ function startGame() {
     window.requestAnimationFrame(animate);
   });
   paddleIndex = isReferee ? 0 : 1;
-  // paddleX = [225, 225];
+  ballReset();
+  paddleReset();
+  score = [0, 0];
+  trajectoryX = [0, 0];
+  ballDirection = 1;
+  speedY = 2;
+  speedX = 0;
   canvas.addEventListener('mousemove', (e) => {
-    playerMoved = true;
     paddleX = [225, 225];
     paddleX[paddleIndex] = e.offsetX;
     if (paddleX[paddleIndex] < 0) {
@@ -296,9 +298,6 @@ socket.on('ballMove', (ballData) => {
 socket.on('endGame', () => {
   console.log('GAME OVER!', 'script');
   isReferee = false;
-  playerMoved = false;
-  ballReset();
-  paddleReset();
   gameReady = false;
   playerStatus = false;
   gameOver();

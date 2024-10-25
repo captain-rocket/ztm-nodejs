@@ -40,13 +40,13 @@ function listen(io) {
       roomNumber = Math.floor(readyPlayerCount / 2);
       roomNamePreFix = `room`;
 
-      console.log(' check ', gameState.rooms.length === roomNumber, roomNumber === 0 && gameState.rooms.length === 0);
+      // console.log(' check ', gameState.rooms.length === roomNumber, roomNumber === 0 && gameState.rooms.length === 0);
 
       const notARoom = gameState.rooms.length === roomNumber || (roomNumber === 0 && gameState.rooms.length === 0);
-      console.log('roomNumber', roomNumber, 'notARoom', notARoom);
+      // console.log('roomNumber', roomNumber, 'notARoom', notARoom);
 
       if (notARoom) {
-        console.log('push room', gameState.rooms);
+        // console.log('push room', gameState.rooms);
         newRoom = {
           [roomNumber]: {
             players: [],
@@ -54,7 +54,7 @@ function listen(io) {
         };
         gameState.rooms.push(newRoom);
 
-        console.log('Game Room State:', gameState.rooms[roomNumber]);
+        // console.log('Game Room State:', gameState.rooms[roomNumber]);
       }
       room = gameState.rooms[roomNumber];
       socket.join(room);
@@ -71,7 +71,7 @@ function listen(io) {
         'Player ready:',
         socket.id,
         'added to:',
-        room,
+        Object.keys(room).join('. '),
         'pongNamespace size:',
         pongNamespace.adapter.rooms.size,
         'players in room:',
@@ -107,19 +107,19 @@ function listen(io) {
     socket.on('disconnect', (reason) => {
       console.log(`Client ${socket.id} disconnected: ${reason}`);
       // debugger;
-      console.log(`removing player ${socket.id} from room`);
+      // console.log(`removing player ${socket.id} from room`);
       removePlayer(room[roomNumber].players, socket.id);
       readyPlayerCount--;
-      console.log('Remaining player', room[roomNumber].players);
+      // console.log('Remaining player', room[roomNumber].players);
       if (room[roomNumber].players.length === 1) {
         updateRemainingPlayer(room[roomNumber].players, false);
         console.log('Updated remaining player', room[roomNumber].players);
         pongNamespace.to(room).emit('endGame');
-        console.log('endGame sent');
+        // console.log('endGame sent');
       }
       if (room[roomNumber].players.length === 0) {
         delete room;
-        console.log(`Room ${room} cleared`);
+        // console.log(`Room ${room} cleared`);
       }
       console.log('updatedPlayers', room[roomNumber].players);
       socket.leave(room);
